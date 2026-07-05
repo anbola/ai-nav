@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI工具导航 - 管理后台</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f0f2f5; color: #333; font-size: 14px; }
+
+.app-header { background: #fff; padding: 16px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.app-header h1 { font-size: 20px; font-weight: 600; color: #1a1a1a; }
+.app-header .actions { display: flex; gap: 12px; }
+
+.layout { display: flex; min-height: calc(100vh - 60px); }
+.sidebar { width: 260px; background: #fff; border-right: 1px solid #e8e8e8; padding: 16px 0; overflow-y: auto; }
+.sidebar-item { padding: 12px 24px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s; font-size: 14px; color: #555; }
+.sidebar-item:hover { background: #f5f5f5; }
+.sidebar-item.active { background: #e3f2fd; color: #1565c0; font-weight: 500; border-right: 3px solid #1565c0; }
+.sidebar-item .count { margin-left: auto; font-size: 12px; background: #f0f0f0; padding: 2px 8px; border-radius: 10px; color: #888; }
+
+.main-content { flex: 1; padding: 24px; overflow-y: auto; max-height: calc(100vh - 60px); }
+
+.btn { padding: 8px 20px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+.btn-primary { background: #4A90D9; color: #fff; }
+.btn-primary:hover { background: #357ABD; }
+.btn-success { background: #4caf50; color: #fff; }
+.btn-success:hover { background: #388e3c; }
+.btn-danger { background: #f44336; color: #fff; }
+.btn-danger:hover { background: #d32f2f; }
+.btn-default { background: #fff; color: #666; border: 1px solid #d9d9d9; }
+.btn-default:hover { border-color: #4A90D9; color: #4A90D9; }
+.btn-sm { padding: 4px 12px; font-size: 12px; }
+
+.card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #1a1a1a; }
+
+.toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.toolbar-left { display: flex; gap: 12px; align-items: center; }
+
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; padding: 12px 16px; background: #fafafa; border-bottom: 2px solid #e8e8e8; font-size: 13px; font-weight: 600; color: #666; }
+.table td { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+.table tr:hover { background: #fafafa; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+.badge-free { background: #e8f5e9; color: #2e7d32; }
+.badge-freemium { background: #fff3e0; color: #e65100; }
+.badge-paid { background: #fce4ec; color: #c62828; }
+
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #555; }
+.form-input, .form-textarea, .form-select { width: 100%; padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; transition: border-color 0.2s; }
+.form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: #4A90D9; box-shadow: 0 0 0 2px rgba(74,144,217,0.1); }
+.form-textarea { min-height: 80px; resize: vertical; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.modal { background: #fff; border-radius: 12px; width: 560px; max-height: 80vh; overflow-y: auto; }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid #e8e8e8; display: flex; align-items: center; justify-content: space-between; }
+.modal-header h3 { font-size: 18px; font-weight: 600; }
+.modal-close { cursor: pointer; font-size: 20px; color: #999; background: none; border: none; }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid #e8e8e8; display: flex; justify-content: flex-end; gap: 12px; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.stat-card { background: #fff; border-radius: 8px; padding: 20px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.stat-card .num { font-size: 28px; font-weight: 700; color: #4A90D9; }
+.stat-card .label { font-size: 13px; color: #999; margin-top: 4px; }
+
+.tag-input-wrap { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 8px; border: 1px solid #d9d9d9; border-radius: 6px; min-height: 36px; }
+.tag-input-wrap .tag-item { background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 4px; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.tag-input-wrap .tag-item .remove { cursor: pointer; font-weight: bold; }
+.tag-input-wrap input { border: none; outline: none; flex: 1; min-width: 100px; font-size: 13px; }
+
+.import-area { width: 100%; min-height: 200px; padding: 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-family: monospace; font-size: 12px; }
+
+.empty { text-align: center; padding: 60px 20px; color: #999; }
+.empty .icon { font-size: 48px; margin-bottom: 12px; }
+
+.toast { position: fixed; top: 80px; right: 24px; background: #333; color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 2000; animation: slideIn 0.3s ease; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+.section-tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid #e8e8e8; }
+.section-tab { padding: 10px 20px; cursor: pointer; font-size: 14px; color: #666; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.section-tab.active { color: #4A90D9; border-bottom-color: #4A90D9; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+<h1>AI工具导航 - 管理后台</h1>
+<div class="actions">
+<button class="btn btn-default" onclick="exportJSON()">导出JSON</button>
+<button class="btn btn-default" onclick="showImportModal()">导入JSON</button>
+<button class="btn btn-success" onclick="generateDataFile()">生成数据文件</button>
+</div>
+</div>
+
+<div class="layout">
+<div class="sidebar">
+<div class="sidebar-item active" onclick="switchView('dashboard')" id="nav-dashboard">📊 仪表盘</div>
+<div class="sidebar-item" onclick="switchView('categories')" id="nav-categories">📁 分类管理 <span class="count" id="cat-count">0</span></div>
+<div class="sidebar-item" onclick="switchView('sites')" id="nav-sites">🔗 工具管理 <span class="count" id="site-count">0</span></div>
+<div class="sidebar-item" onclick="switchView('export')" id="nav-export">📦 导出/部署</div>
+<div class="sidebar-item" onclick="switchView('help')" id="nav-help">❓ 使用帮助</div>
+</div>
+
+<div class="main-content" id="main-content"></div>
+</div>
+
+<div id="modal-container"></div>
+<div id="toast-container"></div>
+
+<script>
+const ICON_MAP = {
+chat: '💬', edit: '✏️', image: '🎨', video: '🎬', briefcase: '💼',
+code: '💻', palette: '🎨', robot: '🤖', folder: '📁', terminal: '⌨️',
+cart: '🛒', book: '📚', layout: '🏷️'
+};
+
+let appData = {
+version: '1.0.0',
+updateTime: new Date().toISOString().split('T')[0],
+categories: []
+};
+
+let currentView = 'dashboard';
+
+function init() {
+const saved = localStorage.getItem('nav_admin_data');
+if (saved) {
+try { appData = JSON.parse(saved); } catch(e) { loadDefaultData(); }
+} else {
+loadDefaultData();
+}
+render();
+}
+
+function loadDefaultData() {
+appData = {
+version: '1.0.0',
+updateTime: new Date().toISOString().split('T')[0],
+categories: [
+{ id: 'ai-chat', name: 'AI聊天', icon: 'chat', desc: '主流AI对话助手', sites: [
+{ name: 'DeepSeek', url: 'https://chat.deepseek.com', desc: '免费AI助手，支持深度思考', tags: ['免费','深度思考'], free: 'free' }
+]},
+{ id: 'ai-image', name: 'AI图像', icon: 'image', desc: 'AI绘图、图片编辑', sites: [
+{ name: '即梦AI', url: 'https://jimeng.jianying.com', desc: '抖音旗下免费AI图片创作', tags: ['免费','中文'], free: 'free' }
+]}
+]
+};
+saveData();
+}
+
+function saveData() {
+localStorage.setItem('nav_admin_data', JSON.stringify(appData));
+}
+
+function showToast(msg) {
+const container = document.getElementById('toast-container');
+const toast = document.createElement('div');
+toast.className = 'toast';
+toast.textContent = msg;
+container.appendChild(toast);
+setTimeout(() => toast.remove(), 2500);
+}
+
+function switchView(view) {
+currentView = view;
+document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+document.getElementById('nav-' + view).classList.add('active');
+render();
+}
+
+function getTotalSites() {
+return appData.categories.reduce((sum, c) => sum + c.sites.length, 0);
+}
+
+function getFreeCount() {
+return appData.categories.reduce((sum, c) => sum + c.sites.filter(s => s.free === 'free').length, 0);
+}
+
+function render() {
+updateCounts();
+const content = document.getElementById('main-content');
+if (currentView === 'dashboard') content.innerHTML = renderDashboard();
+else if (currentView === 'categories') content.innerHTML = renderCategories();
+else if (currentView === 'sites') content.innerHTML = renderSites();
+else if (currentView === 'export') content.innerHTML = renderExport();
+else if (currentView === 'help') content.innerHTML = renderHelp();
+}
+
+function updateCounts() {
+document.getElementById('cat-count').textContent = appData.categories.length;
+document.getElementById('site-count').textContent = getTotalSites();
+}
+
+function renderDashboard() {
+return `
+<div class="stats-row">
+<div class="stat-card"><div class="num">${appData.categories.length}</div><div class="label">分类数</div></div>
+<div class="stat-card"><div class="num">${getTotalSites()}</div><div class="label">工具总数</div></div>
+<div class="stat-card"><div class="num">${getFreeCount()}</div><div class="label">完全免费</div></div>
+<div class="stat-card"><div class="num">${appData.updateTime}</div><div class="label">更新日期</div></div>
+</div>
+<div class="card">
+<div class="card-title">分类概览</div>
+<table class="table">
+<thead><tr><th>分类</th><th>图标</th><th>工具数</th><th>描述</th><th>操作</th></tr></thead>
+<tbody>
+${appData.categories.map(cat => `
+<tr>
+<td>${cat.name}</td>
+<td>${ICON_MAP[cat.icon] || '📁'}</td>
+<td>${cat.sites.length}</td>
+<td>${cat.desc || ''}</td>
+<td><button class="btn btn-default btn-sm" onclick="editCategory('${cat.id}')">编辑</button></td>
+</tr>
+`).join('')}
+</tbody>
+</table>
+</div>
+`;
+}
+
+function renderCategories() {
+return `
+<div class="toolbar">
+<div class="toolbar-left"><h2>分类管理</h2></div>
+<button class="btn btn-primary" onclick="addCategory()">+ 添加分类</button>
+</div>
+<div class="card">
+<table class="table">
+<thead><tr><th>ID</th><th>名称</th><th>图标</th><th>描述</th><th>工具数</th><th>操作</th></tr></thead>
+<tbody>
+${appData.categories.map(cat => `
+<tr>
+<td style="font-family:monospace;font-size:12px;">${cat.id}</td>
+<td>${cat.name}</td>
+<td>${ICON_MAP[cat.icon] || '📁'}</td>
+<td>${cat.desc || ''}</td>
+<td>${cat.sites.length}</td>
+<td>
+<button class="btn btn-default btn-sm" onclick="editCategory('${cat.id}')">编辑</button>
+<button class="btn btn-danger btn-sm" onclick="deleteCategory('${cat.id}')">删除</button>
+</td>
+</tr>
+`).join('')}
+</tbody>
+</table>
+</div>
+`;
+}
+
+function renderSites() {
+const catOptions = appData.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+return `
+<div class="toolbar">
+<div class="toolbar-left">
+<h2>工具管理</h2>
+<select class="form-select" style="width:160px;" id="site-filter" onchange="render()">
+<option value="">全部分类</option>
+${catOptions}
+</select>
+</div>
+<button class="btn btn-primary" onclick="addSite()">+ 添加工具</button>
+</div>
+<div class="card">
+<table class="table">
+<thead><tr><th>名称</th><th>分类</th><th>网址</th><th>免费类型</th><th>标签</th><th>操作</th></tr></thead>
+<tbody>
+${getFilteredSites().map(s => `
+<tr>
+<td>${s.name}</td>
+<td>${s.catName}</td>
+<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;"><a href="${s.url}" target="_blank" style="color:#4A90D9;">${s.url}</a></td>
+<td><span class="badge badge-${s.free}">${s.free === 'free' ? '免费' : s.free === 'freemium' ? '免费试用' : '付费'}</span></td>
+<td>${(s.tags || []).join(', ')}</td>
+<td>
+<button class="btn btn-default btn-sm" onclick="editSite('${s.catId}','${s.url}')">编辑</button>
+<button class="btn btn-danger btn-sm" onclick="deleteSite('${s.catId}','${s.url}')">删除</button>
+</td>
+</tr>
+`).join('')}
+</tbody>
+</table>
+${getFilteredSites().length === 0 ? '<div class="empty"><div class="icon">📭</div>暂无工具，点击右上角添加</div>' : ''}
+</div>
+`;
+}
+
+function getFilteredSites() {
+const filter = document.getElementById('site-filter') ? document.getElementById('site-filter').value : '';
+let sites = [];
+appData.categories.forEach(cat => {
+if (!filter || filter === cat.id) {
+cat.sites.forEach(s => {
+sites.push({ ...s, catId: cat.id, catName: cat.name });
+});
+}
+});
+return sites;
+}
+
+function renderExport() {
+return `
+<div class="card">
+<div class="card-title">导出 JSON 数据</div>
+<p style="margin-bottom:16px;color:#666;">点击下方按钮导出完整数据JSON文件，可用于备份或部署到小程序。</p>
+<button class="btn btn-primary" onclick="exportJSON()">下载 JSON 文件</button>
+<button class="btn btn-default" onclick="copyJSON()" style="margin-left:8px;">复制到剪贴板</button>
+</div>
+<div class="card">
+<div class="card-title">生成 sites.js 数据文件</div>
+<p style="margin-bottom:16px;color:#666;">生成可直接替换小程序 data/sites.js 的完整文件内容。</p>
+<button class="btn btn-success" onclick="generateDataFile()">生成并下载 sites.js</button>
+</div>
+<div class="card">
+<div class="card-title">导入 JSON 数据</div>
+<p style="margin-bottom:16px;color:#666;">粘贴之前导出的JSON数据，或上传JSON文件进行导入。</p>
+<textarea class="import-area" id="import-area" placeholder='粘贴JSON数据...'></textarea>
+<div style="margin-top:12px;display:flex;gap:8px;">
+<button class="btn btn-primary" onclick="importFromText()">从文本导入</button>
+<input type="file" id="import-file" accept=".json" style="display:none;" onchange="importFromFile(event)">
+<button class="btn btn-default" onclick="document.getElementById('import-file').click()">上传JSON文件</button>
+</div>
+</div>
+`;
+}
+
+function renderHelp() {
+return `
+<div class="card">
+<div class="card-title">使用帮助</div>
+<h3 style="margin:16px 0 8px;">1. 添加工具</h3>
+<p style="color:#666;line-height:1.8;">在"工具管理"页面点击"添加工具"，填写名称、网址、描述、免费类型和标签。</p>
+<h3 style="margin:16px 0 8px;">2. 管理分类</h3>
+<p style="color:#666;line-height:1.8;">在"分类管理"页面可以添加、编辑、删除分类。每个分类有独立的ID、名称和图标。</p>
+<h3 style="margin:16px 0 8px;">3. 导出和部署</h3>
+<p style="color:#666;line-height:1.8;">在"导出/部署"页面，点击"生成并下载 sites.js"，将下载的文件替换小程序中的 data/sites.js，然后重新编译上传即可更新内容。</p>
+<h3 style="margin:16px 0 8px;">4. 数据备份</h3>
+<p style="color:#666;line-height:1.8;">建议定期使用"导出JSON"功能备份数据。数据存储在浏览器本地，清除浏览器缓存会丢失。</p>
+<h3 style="margin:16px 0 8px;">5. 免费类型说明</h3>
+<p style="color:#666;line-height:1.8;">free = 完全免费 | freemium = 有免费额度/免费试用 | paid = 需付费使用</p>
+<h3 style="margin:16px 0 8px;">6. 图标选项</h3>
+<p style="color:#666;line-height:1.8;">可用图标: chat(💬) edit(✏️) image(🎨) video(🎬) briefcase(💼) code(💻) palette(🎨) robot(🤖) folder(📁) terminal(⌨️) cart(🛒) book(📚) layout(🏷️)</p>
+</div>
+`;
+}
+
+function addCategory() {
+showCategoryModal(null);
+}
+
+function editCategory(id) {
+const cat = appData.categories.find(c => c.id === id);
+showCategoryModal(cat);
+}
+
+function showCategoryModal(cat) {
+const isEdit = !!cat;
+const modal = `
+<div class="modal-overlay" onclick="closeModalIfOverlay(event)">
+<div class="modal">
+<div class="modal-header">
+<h3>${isEdit ? '编辑分类' : '添加分类'}</h3>
+<button class="modal-close" onclick="closeModal()">&times;</button>
+</div>
+<div class="modal-body">
+<div class="form-group">
+<label class="form-label">分类ID (英文，不可重复)</label>
+<input class="form-input" id="cat-id" value="${cat ? cat.id : ''}" ${isEdit ? 'disabled' : ''} placeholder="如: ai-tools">
+</div>
+<div class="form-group">
+<label class="form-label">分类名称</label>
+<input class="form-input" id="cat-name" value="${cat ? cat.name : ''}" placeholder="如: AI工具">
+</div>
+<div class="form-group">
+<label class="form-label">图标</label>
+<select class="form-select" id="cat-icon">
+${Object.entries(ICON_MAP).map(([k, v]) => `<option value="${k}" ${cat && cat.icon === k ? 'selected' : ''}>${v} ${k}</option>`).join('')}
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">分类描述</label>
+<textarea class="form-textarea" id="cat-desc" placeholder="分类简要描述">${cat ? cat.desc : ''}</textarea>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-default" onclick="closeModal()">取消</button>
+<button class="btn btn-primary" onclick="saveCategory(${isEdit ? '\'' + cat.id + '\'' : 'null'})">保存</button>
+</div>
+</div>
+</div>
+`;
+document.getElementById('modal-container').innerHTML = modal;
+}
+
+function saveCategory(existingId) {
+const id = document.getElementById('cat-id').value.trim();
+const name = document.getElementById('cat-name').value.trim();
+const icon = document.getElementById('cat-icon').value;
+const desc = document.getElementById('cat-desc').value.trim();
+
+if (!id || !name) { showToast('请填写ID和名称'); return; }
+
+if (existingId) {
+const cat = appData.categories.find(c => c.id === existingId);
+cat.name = name; cat.icon = icon; cat.desc = desc;
+} else {
+if (appData.categories.some(c => c.id === id)) { showToast('ID已存在'); return; }
+appData.categories.push({ id, name, icon, desc, sites: [] });
+}
+saveData();
+closeModal();
+render();
+showToast('保存成功');
+}
+
+function deleteCategory(id) {
+const cat = appData.categories.find(c => c.id === id);
+if (!cat) return;
+if (!confirm(`确定删除分类"${cat.name}"及其下${cat.sites.length}个工具吗？`)) return;
+appData.categories = appData.categories.filter(c => c.id !== id);
+saveData();
+render();
+showToast('已删除');
+}
+
+function addSite() {
+showSiteModal(null, null);
+}
+
+function editSite(catId, url) {
+const cat = appData.categories.find(c => c.id === catId);
+const site = cat.sites.find(s => s.url === url);
+showSiteModal(site, catId);
+}
+
+function showSiteModal(site, catId) {
+const isEdit = !!site;
+const catOptions = appData.categories.map(c => `<option value="${c.id}" ${catId === c.id ? 'selected' : ''}>${c.name}</option>`).join('');
+const tags = site ? (site.tags || []) : [];
+const modal = `
+<div class="modal-overlay" onclick="closeModalIfOverlay(event)">
+<div class="modal">
+<div class="modal-header">
+<h3>${isEdit ? '编辑工具' : '添加工具'}</h3>
+<button class="modal-close" onclick="closeModal()">&times;</button>
+</div>
+<div class="modal-body">
+<div class="form-group">
+<label class="form-label">所属分类</label>
+<select class="form-select" id="site-category">${catOptions}</select>
+</div>
+<div class="form-group">
+<label class="form-label">工具名称</label>
+<input class="form-input" id="site-name" value="${site ? site.name : ''}" placeholder="如: DeepSeek">
+</div>
+<div class="form-group">
+<label class="form-label">工具网址</label>
+<input class="form-input" id="site-url" value="${site ? site.url : ''}" placeholder="https://...">
+</div>
+<div class="form-group">
+<label class="form-label">工具描述</label>
+<textarea class="form-textarea" id="site-desc" placeholder="简要描述工具功能">${site ? site.desc : ''}</textarea>
+</div>
+<div class="form-group">
+<label class="form-label">免费类型</label>
+<select class="form-select" id="site-free">
+<option value="free" ${site && site.free === 'free' ? 'selected' : ''}>完全免费</option>
+<option value="freemium" ${site && site.free === 'freemium' ? 'selected' : ''}>免费试用/有免费额度</option>
+<option value="paid" ${site && site.free === 'paid' ? 'selected' : ''}>需付费</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">标签 (回车添加)</label>
+<div class="tag-input-wrap" id="tag-wrap">
+${tags.map((t, i) => `<span class="tag-item">${t}<span class="remove" onclick="removeTag(${i})">&times;</span></span>`).join('')}
+<input type="text" id="tag-input" placeholder="输入标签后回车" onkeydown="handleTagKeydown(event)">
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-default" onclick="closeModal()">取消</button>
+<button class="btn btn-primary" onclick="saveSite('${site ? site.url : ''}')">保存</button>
+</div>
+</div>
+</div>
+`;
+document.getElementById('modal-container').innerHTML = modal;
+}
+
+let currentTags = [];
+function handleTagKeydown(e) {
+if (e.key === 'Enter') {
+e.preventDefault();
+const input = document.getElementById('tag-input');
+const val = input.value.trim();
+if (val) {
+currentTags = getModalTags();
+currentTags.push(val);
+input.value = '';
+renderTags();
+}
+}
+}
+
+function getModalTags() {
+const items = document.querySelectorAll('#tag-wrap .tag-item');
+return Array.from(items).map(item => item.textContent.replace('×', '').trim());
+}
+
+function removeTag(index) {
+currentTags = getModalTags();
+currentTags.splice(index, 1);
+renderTags();
+}
+
+function renderTags() {
+const wrap = document.getElementById('tag-wrap');
+const input = '<input type="text" id="tag-input" placeholder="输入标签后回车" onkeydown="handleTagKeydown(event)">';
+wrap.innerHTML = currentTags.map((t, i) => `<span class="tag-item">${t}<span class="remove" onclick="removeTag(${i})">&times;</span></span>`).join('') + input;
+}
+
+function saveSite(oldUrl) {
+const catId = document.getElementById('site-category').value;
+const name = document.getElementById('site-name').value.trim();
+const url = document.getElementById('site-url').value.trim();
+const desc = document.getElementById('site-desc').value.trim();
+const free = document.getElementById('site-free').value;
+const tags = getModalTags();
+
+if (!name || !url) { showToast('请填写名称和网址'); return; }
+
+const cat = appData.categories.find(c => c.id === catId);
+if (!cat) { showToast('分类不存在'); return; }
+
+const siteData = { name, url, desc, free, tags };
+
+if (oldUrl) {
+const index = cat.sites.findIndex(s => s.url === oldUrl);
+if (index > -1) cat.sites[index] = siteData;
+} else {
+if (cat.sites.some(s => s.url === url)) { showToast('该网址已存在'); return; }
+cat.sites.push(siteData);
+}
+
+saveData();
+closeModal();
+render();
+showToast('保存成功');
+}
+
+function deleteSite(catId, url) {
+if (!confirm('确定删除这个工具吗？')) return;
+const cat = appData.categories.find(c => c.id === catId);
+if (cat) {
+cat.sites = cat.sites.filter(s => s.url !== url);
+saveData();
+render();
+showToast('已删除');
+}
+}
+
+function closeModal() {
+document.getElementById('modal-container').innerHTML = '';
+currentTags = [];
+}
+
+function closeModalIfOverlay(e) {
+if (e.target.classList.contains('modal-overlay')) closeModal();
+}
+
+function exportJSON() {
+appData.updateTime = new Date().toISOString().split('T')[0];
+saveData();
+const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+const a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = `nav-data-${appData.updateTime}.json`;
+a.click();
+showToast('已导出JSON');
+}
+
+function copyJSON() {
+appData.updateTime = new Date().toISOString().split('T')[0];
+saveData();
+const text = JSON.stringify(appData, null, 2);
+navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+}
+
+function generateDataFile() {
+appData.updateTime = new Date().toISOString().split('T')[0];
+saveData();
+const content = `// sites.js - 导航数据（由管理后台生成）
+// 生成时间: ${new Date().toLocaleString('zh-CN')}
+// 请将此文件替换小程序中的 data/sites.js
+
+module.exports = ${JSON.stringify(appData, null, 2)};
+`;
+const blob = new Blob([content], { type: 'text/javascript' });
+const a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = 'sites.js';
+a.click();
+showToast('已生成 sites.js');
+}
+
+function showImportModal() {
+switchView('export');
+setTimeout(() => {
+document.getElementById('import-area').focus();
+}, 100);
+}
+
+function importFromText() {
+const text = document.getElementById('import-area').value.trim();
+if (!text) { showToast('请粘贴JSON数据'); return; }
+try {
+const data = JSON.parse(text);
+if (!data.categories) { showToast('数据格式不正确'); return; }
+if (!confirm('导入将覆盖当前数据，确定继续吗？')) return;
+appData = data;
+saveData();
+render();
+showToast('导入成功');
+} catch(e) {
+showToast('JSON解析失败: ' + e.message);
+}
+}
+
+function importFromFile(event) {
+const file = event.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = function(e) {
+document.getElementById('import-area').value = e.target.result;
+importFromText();
+};
+reader.readAsText(file);
+}
+
+init();
+</script>
+</body>
+</html>

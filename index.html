@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI工具导航 - 收录130+免费AI工具和办公资源，分类齐全，持续更新">
+<title>AI工具导航 | 免费AI工具和办公资源大全</title>
+<style>
+:root {
+  --bg: #f0f2f5;
+  --card-bg: #ffffff;
+  --text: #1a1a2e;
+  --text-secondary: #666;
+  --border: #e8e8e8;
+  --primary: #4f6ef7;
+  --primary-light: #e8edff;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+  --nav-height: 60px;
+}
+[data-theme="dark"] {
+  --bg: #0d1117;
+  --card-bg: #161b22;
+  --text: #e6edf3;
+  --text-secondary: #8b949e;
+  --border: #30363d;
+  --primary: #58a6ff;
+  --primary-light: #1a2332;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+  min-height: 100vh;
+}
+
+/* 顶部导航栏 */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+}
+.navbar .logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.navbar .search-box {
+  flex: 1;
+  max-width: 500px;
+  position: relative;
+}
+.navbar .search-box input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0 20px 0 44px;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.navbar .search-box input:focus {
+  border-color: var(--primary);
+}
+.navbar .search-box .search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  opacity: 0.5;
+}
+.navbar .theme-toggle {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: 0.2s;
+  flex-shrink: 0;
+}
+.navbar .theme-toggle:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.navbar .stats {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* 主内容区 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* 页面切换 */
+.page { display: none; }
+.page.active { display: block; }
+
+/* 分类网格 */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.category-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+.category-card .cat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+.category-card .cat-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.category-card .cat-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.category-card .cat-count {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--primary-light);
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+
+/* 分类详情页 */
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.back-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: 0.2s;
+  flex-shrink: 0;
+}
+.back-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.category-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.category-title .cat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.category-title h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.category-title p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* 工具列表 */
+.sites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.site-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.site-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary);
+}
+.site-card .site-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.site-card .site-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.site-card .site-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.site-card .site-badge.free {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.site-card .site-badge.freemium {
+  background: #fff3e0;
+  color: #e65100;
+}
+.site-card .site-badge.paid {
+  background: #fce4ec;
+  color: #c62828;
+}
+[data-theme="dark"] .site-card .site-badge.free {
+  background: #1b3a1b;
+  color: #66bb6a;
+}
+[data-theme="dark"] .site-card .site-badge.freemium {
+  background: #3e2723;
+  color: #ff9800;
+}
+[data-theme="dark"] .site-card .site-badge.paid {
+  background: #3b1e1e;
+  color: #ef5350;
+}
+.site-card .site-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.site-card .site-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.site-card .site-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.site-card .site-url {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  word-break: break-all;
+  opacity: 0.7;
+}
+
+/* 搜索结果 */
+.search-results {
+  margin-top: 20px;
+}
+.search-results .result-count {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+.no-results .emoji {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+/* 面包屑 */
+.breadcrumb {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+.breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 热门标签 */
+.hot-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.hot-tag {
+  padding: 6px 16px;
+  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: 0.2s;
+}
+.hot-tag:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* 页脚 */
+.footer {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.footer a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* 分类渐变色 */
+.grad-chat { background: linear-gradient(135deg, #667eea, #764ba2); }
+.grad-edit { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.grad-image { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.grad-video { background: linear-gradient(135deg, #fa709a, #fee140); }
+.grad-briefcase { background: linear-gradient(135deg, #30cfd0, #330867); }
+.grad-code { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+.grad-palette { background: linear-gradient(135deg, #ff9a9e, #fecfef); }
+.grad-robot { background: linear-gradient(135deg, #667eea, #00f2fe); }
+.grad-folder { background: linear-gradient(135deg, #f6d365, #fda085); }
+.grad-terminal { background: linear-gradient(135deg, #84fab0, #8fd3f4); }
+.grad-cart { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+.grad-book { background: linear-gradient(135deg, #84fab0, #8fd3f4); }
+.grad-layout { background: linear-gradient(135deg, #c2e9fb, #a1c4fd); }
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .navbar { padding: 0 12px; gap: 8px; }
+  .navbar .logo { font-size: 16px; }
+  .navbar .stats { display: none; }
+  .container { padding: 16px 12px 40px; }
+  .category-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .category-card { padding: 16px 12px; }
+  .category-card .cat-icon { width: 36px; height: 36px; font-size: 18px; }
+  .sites-grid { grid-template-columns: 1fr; gap: 12px; }
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page.active { animation: fadeIn 0.3s ease; }
+.site-card { animation: fadeIn 0.3s ease; }
+
+/* 管理后台入口 */
+.admin-link {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  text-decoration: none;
+  z-index: 50;
+  transition: transform 0.2s;
+}
+.admin-link:hover { transform: scale(1.1); }
+</style>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<div class="navbar">
+  <div class="logo" onclick="showPage('home')">AI工具导航</div>
+  <div class="search-box">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="搜索工具名称、标签或描述..." oninput="handleSearch(this.value)">
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
+  <div class="stats" id="stats"></div>
+</div>
+
+<!-- 主内容 -->
+<div class="container">
+
+  <!-- 首页：分类列表 -->
+  <div class="page active" id="page-home">
+    <div class="hot-tags" id="hotTags"></div>
+    <div class="category-grid" id="categoryGrid"></div>
+  </div>
+
+  <!-- 分类详情页 -->
+  <div class="page" id="page-category">
+    <div class="breadcrumb">
+      <a onclick="showPage('home')">首页</a> > <span id="breadcrumbCat"></span>
+    </div>
+    <div class="category-header">
+      <button class="back-btn" onclick="showPage('home')">←</button>
+      <div class="category-title">
+        <div class="cat-icon" id="catDetailIcon"></div>
+        <div>
+          <h2 id="catDetailName"></h2>
+          <p id="catDetailDesc"></p>
+        </div>
+      </div>
+    </div>
+    <div class="sites-grid" id="sitesGrid"></div>
+  </div>
+
+  <!-- 搜索结果页 -->
+  <div class="page" id="page-search">
+    <div class="search-results">
+      <div class="result-count" id="resultCount"></div>
+      <div class="sites-grid" id="searchResults"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 页脚 -->
+<div class="footer">
+  <p>AI工具导航 | 收录 <span id="totalCount">0</span>+ 免费工具 | 持续更新</p>
+  <p style="margin-top:8px">数据更新时间：<span id="updateTime"></span></p>
+</div>
+
+<a href="admin.html" class="admin-link" title="管理后台">⚙</a>
+
+<script>
+// ====== 数据 ======
+const SITE_DATA = {
+  version: '1.0.0',
+  updateTime: '2026-07-03',
+  categories: [
+    { id: 'ai-chat', name: 'AI聊天', icon: 'chat', desc: '主流AI对话助手，智能问答、内容创作、代码生成', grad: 'grad-chat', emoji: '💬',
+      sites: [
+        { name: 'DeepSeek', url: 'https://chat.deepseek.com', desc: '幻方量化推出的免费AI助手，支持深度思考模式', tags: ['免费', '深度思考', '代码'], free: 'free' },
+        { name: '豆包', url: 'https://www.doubao.com', desc: '字节跳动推出的智能对话助手，办公创作全能', tags: ['免费', '多模态', '中文'], free: 'free' },
+        { name: 'Kimi', url: 'https://kimi.moonshot.cn', desc: '月之暗面推出，支持超长文本对话和文件分析', tags: ['免费', '长文本', '文件'], free: 'free' },
+        { name: '通义千问', url: 'https://tongyi.aliyun.com', desc: '阿里推出的全能AI助手，基于Qwen模型', tags: ['免费', '多模态', '编程'], free: 'free' },
+        { name: '腾讯元宝', url: 'https://yuanbao.tencent.com', desc: '腾讯推出的免费AI智能助手，支持文件解析', tags: ['免费', '文件', '搜索'], free: 'free' },
+        { name: '智谱清言', url: 'https://chatglm.cn', desc: '智谱推出的全能AI助手，支持代码生成和联网搜索', tags: ['免费', '开源', '搜索'], free: 'free' },
+        { name: '文心一言', url: 'https://yiyan.baidu.com', desc: '百度推出的基于文心大模型的AI智能助手', tags: ['免费', '中文', '搜索'], free: 'free' },
+        { name: '讯飞星火', url: 'https://xinghuo.xfyun.cn', desc: '科大讯飞推出的AI助手，免费PPT生成、深度研究', tags: ['免费', 'PPT', '语音'], free: 'free' },
+        { name: '天工AI', url: 'https://www.tiangong.cn', desc: '昆仑万维推出的AI智能助手，支持联网搜索', tags: ['免费', '搜索', '写作'], free: 'free' },
+        { name: '问小白', url: 'https://www.wenxiaobai.com', desc: 'AI智能助手，支持DeepSeek满血版', tags: ['免费', 'DeepSeek'], free: 'free' },
+        { name: 'ChatGPT', url: 'https://chat.openai.com', desc: 'OpenAI推出的AI聊天机器人鼻祖，支持GPT-4o', tags: ['免费试用', '多模态'], free: 'freemium' },
+        { name: 'Claude', url: 'https://claude.ai', desc: 'Anthropic推出的对话式AI，擅长长文本分析和编程', tags: ['免费试用', '长文本', '代码'], free: 'freemium' },
+        { name: 'Gemini', url: 'https://gemini.google.com', desc: 'Google推出的AI对话机器人，支持多模态', tags: ['免费试用', '多模态'], free: 'freemium' }
+      ]
+    },
+    { id: 'ai-write', name: 'AI写作', icon: 'edit', desc: 'AI写作、论文、文案、公文、创意内容生成', grad: 'grad-edit', emoji: '✍',
+      sites: [
+        { name: '笔灵AI写作', url: 'https://ibiling.cn', desc: '600+写作模板，AI一键生成论文/小说，论文降重', tags: ['免费试用', '模板多', '论文'], free: 'freemium' },
+        { name: '光速写作', url: 'https://guangsu.caicui.com', desc: 'AI写作、PPT生成工具，单篇最长15000字', tags: ['免费试用', '长文'], free: 'freemium' },
+        { name: '新华妙笔', url: 'https://miaobi.xinhuaskl.com', desc: '新华社推出的AI公文写作平台，体制内专用', tags: ['免费', '公文', '体制内'], free: 'free' },
+        { name: '讯飞绘文', url: 'https://huiwen.xfyun.cn', desc: 'AI批量原创，多平台矩阵号管理', tags: ['免费试用', '矩阵'], free: 'freemium' },
+        { name: '办公小浣熊', url: 'https://www.xiaohuanxiong.com', desc: '文案生成、AI知识库创作，办公利器', tags: ['免费试用', '办公'], free: 'freemium' },
+        { name: '墨问', url: 'https://www.moask.cn', desc: '专为创作者设计的AI笔记和写作工具', tags: ['免费', '笔记'], free: 'freemium' },
+        { name: '稿定AI文案', url: 'https://www.gaoding.com/ai', desc: '小红书、公众号、短视频AI文案生成', tags: ['免费试用', '文案'], free: 'freemium' },
+        { name: 'YouMind', url: 'https://youmind.com', desc: '专注提升创作效率和信息整合的AI原生工具', tags: ['免费试用', '整合'], free: 'freemium' },
+        { name: '千笔AI论文', url: 'https://www.qianbi.ai', desc: '全网首家论文无限改稿平台', tags: ['免费试用', '论文'], free: 'freemium' },
+        { name: '万能小in', url: 'https://www.wannengxiao.in', desc: '3分钟4万字，150+应用，只需标题快速生成', tags: ['免费试用', '快速'], free: 'freemium' }
+      ]
+    },
+    { id: 'ai-image', name: 'AI图像', icon: 'image', desc: 'AI绘图、图片编辑、图像生成、设计辅助', grad: 'grad-image', emoji: '🎨',
+      sites: [
+        { name: '即梦AI', url: 'https://jimeng.jianying.com', desc: '抖音旗下免费AI图片创作工具，中文友好', tags: ['免费', '中文友好', '抖音'], free: 'free' },
+        { name: '通义万相', url: 'https://tongyi.aliyun.com/wanxiang', desc: '阿里推出的AI创意内容生成平台', tags: ['免费', '阿里'], free: 'free' },
+        { name: '堆友AI', url: 'https://d.design', desc: '阿里推出的全能AI设计服务平台，设计师首选', tags: ['免费', '设计', '阿里'], free: 'free' },
+        { name: 'LiblibAI', url: 'https://www.liblib.art', desc: '国内领先的AI图像创作平台和模型分享社区', tags: ['免费试用', '模型多', '社区'], free: 'freemium' },
+        { name: '稿定AI', url: 'https://www.gaoding.com', desc: '一站式AI设计工具，免费AI绘图、抠图消除', tags: ['免费试用', '抠图', '设计'], free: 'freemium' },
+        { name: '美图设计室', url: 'https://www.designkit.cn', desc: '美图推出的AI图像创作和设计平台', tags: ['免费试用', '美图'], free: 'freemium' },
+        { name: '可灵AI', url: 'https://klingai.kuaishou.com', desc: '快手推出的AI图像和视频创作平台', tags: ['免费试用', '快手', '视频'], free: 'freemium' },
+        { name: 'Krea AI', url: 'https://www.krea.ai', desc: '实时AI图像、视频生成和编辑平台', tags: ['免费试用', '实时'], free: 'freemium' },
+        { name: 'Midjourney', url: 'https://www.midjourney.com', desc: '全球领先的AI图像和插画生成工具', tags: ['付费', '高质量'], free: 'paid' },
+        { name: 'Stable Diffusion', url: 'https://stability.ai', desc: '开源AI文生图模型，可本地免费部署', tags: ['免费', '开源', '本地'], free: 'free' },
+        { name: 'Civitai', url: 'https://civitai.com', desc: '免费的AI绘画作品和模型分享社区', tags: ['免费', '模型', '社区'], free: 'free' },
+        { name: 'Recraft AI', url: 'https://www.recraft.ai', desc: '免费无限AI画板，生成高质量矢量艺术画', tags: ['免费试用', '矢量'], free: 'freemium' }
+      ]
+    },
+    { id: 'ai-video', name: 'AI视频', icon: 'video', desc: 'AI视频生成、数字人、视频编辑、动画制作', grad: 'grad-video', emoji: '🎬',
+      sites: [
+        { name: '即梦AI视频', url: 'https://jimeng.jianying.com', desc: '一站式AI视频、图片、数字人创作，抖音旗下', tags: ['免费试用', '抖音'], free: 'freemium' },
+        { name: '可灵AI视频', url: 'https://klingai.kuaishou.com', desc: '快手推出的AI视频生成工具，效果出色', tags: ['免费试用', '快手'], free: 'freemium' },
+        { name: '腾讯混元视频', url: 'https://hunyuan.tencent.com', desc: '腾讯推出的AI视频生成工具', tags: ['免费试用', '腾讯'], free: 'freemium' },
+        { name: '通义万相视频', url: 'https://tongyi.aliyun.com/wanxiang-video', desc: '阿里推出的AI视频生成工具', tags: ['免费试用', '阿里'], free: 'freemium' },
+        { name: 'Vidu', url: 'https://www.vidu.com', desc: '生数科技推出的AI视频生成大模型', tags: ['免费试用'], free: 'freemium' },
+        { name: '蝉镜', url: 'https://www.chanjing.cc', desc: 'AI数字人视频生成平台，真人形象克隆', tags: ['免费试用', '数字人'], free: 'freemium' },
+        { name: '有言', url: 'https://www.youyan.ai', desc: '一站式AI视频创作和3D数字人生成平台', tags: ['免费试用', '3D'], free: 'freemium' },
+        { name: '白日梦', url: 'https://www.bairimeng.ai', desc: '领先AI创作平台，可生成最长50分钟的视频', tags: ['免费试用', '长视频'], free: 'freemium' },
+        { name: '海螺AI视频', url: 'https://hailuo.ai', desc: 'MiniMax推出的AI视频生成工具', tags: ['免费试用'], free: 'freemium' },
+        { name: 'PixVerse', url: 'https://pixverse.ai', desc: '爱诗科技推出的AI视频生成工具', tags: ['免费试用'], free: 'freemium' }
+      ]
+    },
+    { id: 'ai-office', name: 'AI办公', icon: 'briefcase', desc: 'AI幻灯片、表格、文档、会议、效率工具', grad: 'grad-briefcase', emoji: '💼',
+      sites: [
+        { name: 'AiPPT', url: 'https://www.aippt.cn', desc: 'AI快速生成高质量PPT，支持模板和配图', tags: ['免费试用', 'PPT'], free: 'freemium' },
+        { name: '讯飞智文', url: 'https://zhiwen.xfyun.cn', desc: '一键生成PPT和Word文档，科大讯飞出品', tags: ['免费试用', '讯飞'], free: 'freemium' },
+        { name: '美图AI PPT', url: 'https://design.meitu.com', desc: '美图推出的免费在线AI生成PPT设计工具', tags: ['免费', 'PPT', '美图'], free: 'free' },
+        { name: 'Kimi PPT助手', url: 'https://kimi.moonshot.cn', desc: 'Kimi全新自研的PPT助手，一键生成PPT', tags: ['免费', 'Kimi'], free: 'free' },
+        { name: '夸克PPT', url: 'https://quark.com', desc: '夸克团队推出的AI PPT生成工具', tags: ['免费', '夸克'], free: 'free' },
+        { name: 'Gamma', url: 'https://gamma.app', desc: 'AI幻灯片演示生成工具，设计精美', tags: ['免费试用', '英文'], free: 'freemium' },
+        { name: 'Napkin', url: 'https://www.napkin.ai', desc: '将文本内容快速转换成演示图像的AI办公工具', tags: ['免费试用'], free: 'freemium' },
+        { name: '百度文库AI', url: 'https://wenku.baidu.com', desc: '基于文心一言的智能文档助手', tags: ['免费试用', '百度'], free: 'freemium' },
+        { name: 'WPS AI', url: 'https://ai.wps.cn', desc: 'WPS办公套件集成AI助手，写作和排版', tags: ['免费试用', 'WPS'], free: 'freemium' },
+        { name: '腾讯文档AI', url: 'https://docs.qq.com', desc: '腾讯文档智能助手，支持AI写作和总结', tags: ['免费', '腾讯'], free: 'freemium' },
+        { name: 'iSlide AIPPT', url: 'https://www.islide.cc', desc: 'AI一键设计精美PPT，只需一句标题', tags: ['免费试用', 'PPT'], free: 'freemium' },
+        { name: 'ChartGen', url: 'https://chartgen.ai', desc: 'AI图表生成工具，快速生成专业图表', tags: ['免费试用', '图表'], free: 'freemium' }
+      ]
+    },
+    { id: 'ai-code', name: 'AI编程', icon: 'code', desc: 'AI辅助编程、代码生成、IDE插件、全栈开发', grad: 'grad-code', emoji: '👨‍💻',
+      sites: [
+        { name: '通义灵码', url: 'https://tongyi.aliyun.com/lingma', desc: '阿里推出的免费AI编程工具，基于通义大模型', tags: ['免费', '阿里', 'IDE插件'], free: 'free' },
+        { name: '代码小浣熊', url: 'https://www.xiaohuanxiong.com', desc: '商汤科技推出的免费AI编程助手', tags: ['免费', '商汤'], free: 'free' },
+        { name: 'TRAE', url: 'https://www.trae.cn', desc: '字节跳动推出的AI IDE编程工具，免费使用', tags: ['免费', '字节', 'IDE'], free: 'free' },
+        { name: 'CodeBuddy', url: 'https://copilot.tencent.com', desc: '腾讯推出的全栈开发AI IDE', tags: ['免费', '腾讯', 'IDE'], free: 'free' },
+        { name: 'Cursor', url: 'https://cursor.com', desc: 'AI代码编辑器，快速进行编程和软件开发', tags: ['免费试用', 'IDE'], free: 'freemium' },
+        { name: 'GitHub Copilot', url: 'https://github.com/features/copilot', desc: 'GitHub推出的AI编程助手，学生免费', tags: ['免费试用', 'GitHub'], free: 'freemium' },
+        { name: 'Claude Code', url: 'https://claude.ai/code', desc: 'Anthropic推出的AI编程工具，终端使用', tags: ['付费', '终端'], free: 'paid' },
+        { name: 'Qoder', url: 'https://qoder.com', desc: '阿里巴巴推出的AI Agentic编程工具', tags: ['免费试用', '阿里'], free: 'freemium' },
+        { name: 'Bolt.new', url: 'https://bolt.new', desc: '全栈AI代码工具，浏览器内直接开发', tags: ['免费试用', '全栈'], free: 'freemium' },
+        { name: 'Windsurf', url: 'https://codeium.com/windsurf', desc: 'Codeium公司推出的AI编程工具', tags: ['免费试用', 'IDE'], free: 'freemium' },
+        { name: '腾讯云开发', url: 'https://cloud.tencent.com/product/tcb', desc: '微信小程序云开发，免费额度够用', tags: ['免费额度', '小程序'], free: 'freemium' }
+      ]
+    },
+    { id: 'ai-design', name: 'AI设计', icon: 'palette', desc: 'AI平面设计、UI设计、原型设计、创意辅助', grad: 'grad-palette', emoji: '🖌',
+      sites: [
+        { name: '堆友AI设计', url: 'https://d.design', desc: '专为设计师打造的AI设计服务平台，阿里出品', tags: ['免费', '设计', '阿里'], free: 'free' },
+        { name: '稿定设计', url: 'https://www.gaoding.com', desc: '一站式AI创作和设计平台，模板丰富', tags: ['免费试用', '模板'], free: 'freemium' },
+        { name: '创客贴AI', url: 'https://www.chuangkit.com', desc: 'AI辅助的智能在线设计工具，海报/社交媒体', tags: ['免费试用', '模板'], free: 'freemium' },
+        { name: 'Figma AI', url: 'https://www.figma.com', desc: 'Figma推出的原生AI设计工具', tags: ['免费试用', 'UI', '协作'], free: 'freemium' },
+        { name: 'Pixso AI', url: 'https://pixso.cn', desc: '国产AI设计工具，支持协作，替代Figma', tags: ['免费试用', 'UI', '国产'], free: 'freemium' },
+        { name: '墨刀AI', url: 'https://modao.cc', desc: 'AI秒生原型稿，产品设计利器', tags: ['免费试用', '原型', '产品'], free: 'freemium' },
+        { name: '135 AI排版', url: 'https://www.135editor.com', desc: '公众号AI图文排版和智能文案生成工具', tags: ['免费试用', '排版'], free: 'freemium' },
+        { name: 'Wegic', url: 'https://wegic.ai', desc: 'AI网页设计和建站开发工具，一句话生成网站', tags: ['免费试用', '建站'], free: 'freemium' },
+        { name: '星流AI', url: 'https://starflow.ai', desc: '一站式AI设计与创作工具', tags: ['免费试用'], free: 'freemium' }
+      ]
+    },
+    { id: 'ai-agent', name: 'AI智能体', icon: 'robot', desc: 'AI Agent、自动化办公、智能体平台、工作流', grad: 'grad-robot', emoji: '🤖',
+      sites: [
+        { name: '扣子Coze', url: 'https://www.coze.cn', desc: '免费全能的AI办公智能体平台，字节出品', tags: ['免费', '智能体', '字节'], free: 'free' },
+        { name: 'Dify', url: 'https://dify.ai', desc: '开源的生成式AI应用开发平台', tags: ['免费', '开源', '开发'], free: 'free' },
+        { name: 'FastGPT', url: 'https://fastgpt.in', desc: '免费AI工作流搭建工具，自动化提高效率', tags: ['免费', '开源', '工作流'], free: 'free' },
+        { name: 'n8n', url: 'https://n8n.io', desc: '开源的低代码AI工作流自动化工具', tags: ['免费', '自动化'], free: 'free' },
+        { name: 'Manus', url: 'https://manus.im', desc: '首款自主通用AI Agent，自动执行复杂任务', tags: ['免费试用'], free: 'freemium' },
+        { name: 'TRAE Work', url: 'https://www.trae.cn/work', desc: '字节跳动推出的AI原生工作台', tags: ['免费试用', '工作台'], free: 'freemium' },
+        { name: 'Flowith', url: 'https://flowith.io', desc: '一站式用GPT、Claude，多种AI模型聚合', tags: ['免费试用', '聚合'], free: 'freemium' },
+        { name: 'Genspark', url: 'https://genspark.ai', desc: '通用AI智能体，一站式AI工作空间', tags: ['免费试用'], free: 'freemium' }
+      ]
+    },
+    { id: 'office', name: '办公效率', icon: 'folder', desc: '在线办公、文档处理、协作工具、效率提升', grad: 'grad-folder', emoji: '📁',
+      sites: [
+        { name: '腾讯文档', url: 'https://docs.qq.com', desc: '免费在线文档协作，支持多人实时编辑', tags: ['免费', '协作', '腾讯'], free: 'free' },
+        { name: '飞书文档', url: 'https://www.feishu.cn', desc: '字节跳动推出的一站式协作平台，文档/会议/OKR', tags: ['免费', '协作', '字节'], free: 'freemium' },
+        { name: '石墨文档', url: 'https://shimo.im', desc: '在线文档协作编辑工具，界面简洁', tags: ['免费试用', '协作'], free: 'freemium' },
+        { name: 'WPS Office', url: 'https://www.wps.cn', desc: '免费办公套件，兼容Office格式，移动端强', tags: ['免费', '办公', '移动'], free: 'freemium' },
+        { name: '语雀', url: 'https://www.yuque.com', desc: '蚂蚁集团推出的知识管理和团队文档工具', tags: ['免费试用', '笔记', '阿里'], free: 'freemium' },
+        { name: '幕布', url: 'https://mubu.com', desc: '极简的大纲笔记和思维导图工具', tags: ['免费', '思维导图'], free: 'freemium' },
+        { name: 'ProcessOn', url: 'https://www.processon.com', desc: '免费在线作图工具，流程图/思维导图/原型', tags: ['免费试用', '作图'], free: 'freemium' },
+        { name: '飞书多维表格', url: 'https://www.feishu.cn/product/base', desc: '免费在线数据库和协作表格，功能强大', tags: ['免费', '表格', '字节'], free: 'freemium' },
+        { name: 'Notion', url: 'https://www.notion.so', desc: '全球流行的笔记和知识管理工具', tags: ['免费试用', '英文'], free: 'freemium' },
+        { name: '番茄土豆', url: 'https://pomotodo.com', desc: '番茄工作法+任务管理的效率工具', tags: ['免费试用', '效率'], free: 'freemium' }
+      ]
+    },
+    { id: 'dev-tools', name: '开发工具', icon: 'terminal', desc: '开发者常用在线工具、资源、部署平台', grad: 'grad-terminal', emoji: '🔧',
+      sites: [
+        { name: 'GitHub', url: 'https://github.com', desc: '全球最大的代码托管平台，程序员必备', tags: ['免费', '开源', '代码'], free: 'free' },
+        { name: 'Gitee', url: 'https://gitee.com', desc: '国内代码托管平台，访问速度快，中文友好', tags: ['免费', '国内', '中文'], free: 'free' },
+        { name: 'Vercel', url: 'https://vercel.com', desc: '免费前端部署托管平台，支持Next.js', tags: ['免费', '部署'], free: 'freemium' },
+        { name: 'Cloudflare', url: 'https://www.cloudflare.com', desc: '免费CDN和DNS服务，全球加速', tags: ['免费', 'CDN', 'DNS'], free: 'freemium' },
+        { name: 'Regex101', url: 'https://regex101.com', desc: '在线正则表达式测试工具，支持多语言', tags: ['免费', '正则'], free: 'free' },
+        { name: 'JSON Formatter', url: 'https://jsonformatter.org', desc: 'JSON格式化和验证工具', tags: ['免费', 'JSON'], free: 'free' },
+        { name: 'Can I Use', url: 'https://caniuse.com', desc: '查看Web API浏览器兼容性表格', tags: ['免费', '兼容性'], free: 'free' },
+        { name: 'MDN Web Docs', url: 'https://developer.mozilla.org', desc: 'Web开发权威文档，Mozilla维护', tags: ['免费', '文档'], free: 'free' },
+        { name: 'Stack Overflow', url: 'https://stackoverflow.com', desc: '全球最大的程序员问答社区', tags: ['免费', '问答'], free: 'free' },
+        { name: 'CodePen', url: 'https://codepen.io', desc: '在线前端代码编辑和展示平台', tags: ['免费', '前端', '演示'], free: 'freemium' },
+        { name: 'Deno Deploy', url: 'https://deno.com/deploy', desc: '免费Serverless部署平台，支持Deno', tags: ['免费', '部署'], free: 'freemium' },
+        { name: 'Railway', url: 'https://railway.app', desc: '免费全栈应用部署平台', tags: ['免费额度', '部署'], free: 'freemium' }
+      ]
+    },
+    { id: 'shopping', name: '优惠购物', icon: 'cart', desc: '淘宝京东拼多多优惠券、返利、比价工具', grad: 'grad-cart', emoji: '🛒',
+      sites: [
+        { name: '淘宝联盟', url: 'https://pub.alimama.com', desc: '淘宝官方推广平台，获取优惠券和佣金', tags: ['优惠券', '返利', '淘宝'], free: 'free' },
+        { name: '京东联盟', url: 'https://union.jd.com', desc: '京东官方CPS推广平台，按成交计费', tags: ['优惠券', '返利', '京东'], free: 'free' },
+        { name: '拼多多多多进宝', url: 'https://jinbao.pinduoduo.com', desc: '拼多多官方CPS推广平台，高佣金', tags: ['优惠券', '返利', '拼多多'], free: 'free' },
+        { name: '什么值得买', url: 'https://www.smzdm.com', desc: '网购优惠信息和比价工具，好价爆料', tags: ['比价', '优惠', '社区'], free: 'free' },
+        { name: '慢慢买', url: 'https://www.manmanbuy.com', desc: '全网比价工具，历史价格查询和降价提醒', tags: ['比价', '历史价'], free: 'free' },
+        { name: '返利网', url: 'https://www.fanli.com', desc: '网购返利平台，覆盖多家电商', tags: ['返利', '优惠'], free: 'free' }
+      ]
+    },
+    { id: 'learning', name: '学习资源', icon: 'book', desc: '免费在线学习平台、课程、教程资源', grad: 'grad-book', emoji: '📚',
+      sites: [
+        { name: '中国大学MOOC', url: 'https://www.icourse163.org', desc: '国内高校免费在线课程平台，985/211课程', tags: ['免费', '高校', '国内'], free: 'free' },
+        { name: 'B站学习', url: 'https://www.bilibili.com', desc: '海量免费学习视频资源，UP主良心教程', tags: ['免费', '视频', '全面'], free: 'free' },
+        { name: '慕课网', url: 'https://www.imooc.com', desc: 'IT技能免费学习平台，实战课程多', tags: ['免费试用', '编程', 'IT'], free: 'freemium' },
+        { name: '网易公开课', url: 'https://open.163.com', desc: '国内外名校公开课免费看，TED也在这里', tags: ['免费', '公开课', '名校'], free: 'free' },
+        { name: '学堂在线', url: 'https://www.xuetangx.com', desc: '清华大学发起的MOOC平台', tags: ['免费', '高校', '清华'], free: 'freemium' },
+        { name: 'Coursera', url: 'https://www.coursera.org', desc: '全球顶尖大学在线课程，可免费旁听', tags: ['免费试用', '英文', '名校'], free: 'freemium' },
+        { name: '可汗学院', url: 'https://www.khanacademy.org', desc: '可汗学院免费教育平台，K12全科', tags: ['免费', '英文', 'K12'], free: 'free' },
+        { name: 'Codecademy', url: 'https://www.codecademy.com', desc: '交互式编程学习平台，实战编程', tags: ['免费试用', '英文', '编程'], free: 'freemium' },
+        { name: 'freeCodeCamp', url: 'https://www.freecodecamp.org', desc: '免费学编程，项目驱动，证书认可', tags: ['免费', '英文', '编程'], free: 'free' },
+        { name: '菜鸟教程', url: 'https://www.runoob.com', desc: '免费编程入门教程，中文简洁易懂', tags: ['免费', '中文', '编程'], free: 'free' },
+        { name: 'W3School', url: 'https://www.w3school.com.cn', desc: 'Web技术在线教程，实例丰富', tags: ['免费', '中文', 'Web'], free: 'free' }
+      ]
+    },
+    { id: 'design-res', name: '设计资源', icon: 'layout', desc: '免费图片素材、图标、字体、UI资源', grad: 'grad-layout', emoji: '🎯',
+      sites: [
+        { name: 'Unsplash', url: 'https://unsplash.com', desc: '免费高清图片素材库，无版权可商用', tags: ['免费', '无版权', '图片'], free: 'free' },
+        { name: 'Pexels', url: 'https://www.pexels.com', desc: '免费图片和视频素材，质量高', tags: ['免费', '无版权', '视频'], free: 'free' },
+        { name: 'iconfont', url: 'https://www.iconfont.cn', desc: '阿里推出的免费图标库，海量图标', tags: ['免费', '图标', '阿里'], free: 'free' },
+        { name: 'IconPark', url: 'https://iconpark.oceanengine.com', desc: '字节跳动推出的免费图标库', tags: ['免费', '图标', '字节'], free: 'free' },
+        { name: 'Google Fonts', url: 'https://fonts.google.com', desc: 'Google免费字体库，1500+字体', tags: ['免费', '字体'], free: 'free' },
+        { name: 'Font Awesome', url: 'https://fontawesome.com', desc: '全球最流行的图标字体库', tags: ['免费', '图标', '字体'], free: 'freemium' },
+        { name: 'Freepik', url: 'https://www.freepik.com', desc: '免费矢量图、PSD素材和摄影图片', tags: ['免费试用', '素材'], free: 'freemium' },
+        { name: 'Remove.bg', url: 'https://www.remove.bg', desc: 'AI一键免费抠图工具，5秒出图', tags: ['免费试用', '抠图'], free: 'freemium' },
+        { name: 'TinyPNG', url: 'https://tinypng.com', desc: '免费在线图片压缩工具，PNG/WEBP', tags: ['免费', '压缩'], free: 'freemium' },
+        { name: 'MasterGo', url: 'https://mastergo.com', desc: '国产UI设计协作工具，免费使用', tags: ['免费', 'UI', '协作'], free: 'freemium' }
+      ]
+    }
+  ]
+};
+
+// ====== 逻辑 ======
+let allSites = [];
+let searchTimer = null;
+
+function init() {
+  // 统计总数
+  let total = 0;
+  SITE_DATA.categories.forEach(cat => total += cat.sites.length);
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('updateTime').textContent = SITE_DATA.updateTime;
+  document.getElementById('stats').textContent = `${total}+ 工具 | ${SITE_DATA.categories.length} 分类`;
+
+  // 扁平化所有站点用于搜索
+  SITE_DATA.categories.forEach(cat => {
+    cat.sites.forEach(s => allSites.push({ ...s, categoryName: cat.name }));
+  });
+
+  // 渲染分类
+  renderCategories();
+
+  // 渲染热门标签
+  renderHotTags();
+
+  // 恢复主题
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.querySelector('.theme-toggle').textContent = '☀';
+  }
+}
+
+function renderCategories() {
+  const grid = document.getElementById('categoryGrid');
+  grid.innerHTML = SITE_DATA.categories.map(cat => `
+    <div class="category-card" onclick="showCategory('${cat.id}')">
+      <div class="cat-icon ${cat.grad}">${cat.emoji}</div>
+      <div class="cat-name">${cat.name}</div>
+      <div class="cat-desc">${cat.desc}</div>
+      <div class="cat-count">${cat.sites.length}个</div>
+    </div>
+  `).join('');
+}
+
+function renderHotTags() {
+  const tagSet = new Set();
+  SITE_DATA.categories.forEach(cat => {
+    cat.sites.forEach(s => {
+      s.tags.forEach(t => {
+        if (t === '免费') tagSet.add('免费工具');
+        else if (t === '免费试用') tagSet.add('免费试用');
+        else tagSet.add(t);
+      });
+    });
+  });
+  const hotTags = ['免费工具', 'AI聊天', 'AI写作', 'AI绘画', 'PPT', '编程', '设计', '论文', '办公', '比价'];
+  document.getElementById('hotTags').innerHTML = hotTags.map(t =>
+    `<div class="hot-tag" onclick="document.getElementById('searchInput').value='${t}';handleSearch('${t}')">${t}</div>`
+  ).join('');
+}
+
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  if (pageId === 'home') {
+    document.getElementById('searchInput').value = '';
+  }
+  window.scrollTo(0, 0);
+}
+
+function showCategory(catId) {
+  const cat = SITE_DATA.categories.find(c => c.id === catId);
+  if (!cat) return;
+  document.getElementById('breadcrumbCat').textContent = cat.name;
+  document.getElementById('catDetailName').textContent = cat.name;
+  document.getElementById('catDetailDesc').textContent = cat.desc;
+  const iconEl = document.getElementById('catDetailIcon');
+  iconEl.className = 'cat-icon ' + cat.grad;
+  iconEl.textContent = cat.emoji;
+  document.getElementById('sitesGrid').innerHTML = cat.sites.map(s => renderSiteCard(s)).join('');
+  showPage('category');
+}
+
+function renderSiteCard(s) {
+  const badgeMap = { free: '免费', freemium: '免费试用', paid: '付费' };
+  const badgeClass = s.free || 'freemium';
+  const badgeText = badgeMap[badgeClass] || '免费试用';
+  const tagsHtml = s.tags.map(t => `<span class="site-tag">${t}</span>`).join('');
+  return `
+    <a class="site-card" href="${s.url}" target="_blank" rel="noopener">
+      <div class="site-header">
+        <span class="site-name">${s.name}</span>
+        <span class="site-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="site-desc">${s.desc}</div>
+      <div class="site-tags">${tagsHtml}</div>
+      <div class="site-url">${s.url}</div>
+    </a>
+  `;
+}
+
+function handleSearch(query) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    if (!query || query.trim() === '') {
+      if (document.getElementById('page-search').classList.contains('active')) {
+        showPage('home');
+      }
+      return;
+    }
+    const q = query.trim().toLowerCase();
+    const results = allSites.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      s.desc.toLowerCase().includes(q) ||
+      s.tags.some(t => t.toLowerCase().includes(q)) ||
+      s.categoryName.toLowerCase().includes(q)
+    );
+    document.getElementById('resultCount').textContent = `找到 ${results.length} 个结果`;
+    if (results.length === 0) {
+      document.getElementById('searchResults').innerHTML = `
+        <div class="no-results">
+          <div class="emoji">🔍</div>
+          <p>没有找到相关工具，试试其他关键词？</p>
+        </div>
+      `;
+    } else {
+      document.getElementById('searchResults').innerHTML = results.map(s => renderSiteCard(s)).join('');
+    }
+    showPage('search');
+  }, 200);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  if (current === 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'light');
+    document.querySelector('.theme-toggle').textContent = '🌙';
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
+    document.querySelector('.theme-toggle').textContent = '☀';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
